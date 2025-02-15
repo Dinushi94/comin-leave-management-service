@@ -22,7 +22,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::992382545225:role/EC2-ECR-Access-Role # Correct IAM role ARN
+          role-to-assume: arn:aws:iam::992382545225:role/github_go_backend # Correct IAM role ARN
           aws-region: us-west-2 # Replace with your AWS region
 
       # Step 3: Login to AWS ECR
