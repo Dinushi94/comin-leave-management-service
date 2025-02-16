@@ -34,12 +34,12 @@ jobs:
       - name: Build and tag Docker image
         run: |
           docker build -t comin-leave-management:latest .
-          docker tag comin-leave-management:latest 992382545225.dkr.ecr.us-west-2.amazonaws.com/comin-leave-management-service:latest
+          docker tag comin-leave-management:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/comin-leave-management-service:latest
 
       # Step 5: Push the Docker image to ECR
       - name: Push Docker image to ECR
         run: |
-          docker push 992382545225.dkr.ecr.us-west-2.amazonaws.com/comin-leave-management-service:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/comin-leave-management-service:latest
 
       # Step 6: Deploy to EC2
       - name: Deploy to EC2
@@ -50,10 +50,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }} # Private SSH key
           script: |
             # Login to AWS ECR
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin 992382545225.dkr.ecr.us-west-2.amazonaws.com
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
             # Pull the latest Docker image from ECR
-            docker pull 992382545225.dkr.ecr.us-west-2.amazonaws.com/comin-leave-management-service:latest
+            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/comin-leave-management-service:latest
 
             # Stop and remove the existing container (if running)
             docker stop comin-leave-management-service || true
