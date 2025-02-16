@@ -22,7 +22,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::992382545225:role/Terraform_cicd_oidc # IAM role ARN
+          role-to-assume: arn:aws:iam::992382545225:role/GitHubActionsRole # IAM role ARN
           aws-region: us-west-2  # AWS region 
 
       - name: Verify AWS credentials
