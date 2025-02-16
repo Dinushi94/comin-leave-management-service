@@ -1,57 +1,34 @@
-name: Deploy to ECR and EC2 using OIDC
+name: Test EC2 SSH Connection
 
 on:
   push:
     branches:
-      - main  # Trigger on pushes to the main branch
-  pull_request:
-    branches:
-      - main  # Trigger on pull requests to the main branch
-
-permissions:
-  id-token: write  # Required for OIDC
-  contents: read   # Required to checkout the repository
+      - main
 
 jobs:
-  check-aws-credentials:
+  test-ssh:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }} # IAM role ARN
-          aws-region: ${{ secrets.AWS_REGION }}  # AWS region 
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Verify AWS credentials
-        run: |
-          # Install AWS CLI (if not already installed)
-          if ! command -v aws &> /dev/null; then
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-          fi
-          # Check AWS CLI version and credentials
-          aws --version
-          aws sts get-caller-identity
-
-      - name: Verify AWS credentials
-        run: |
-          # Check if AWS CLI is working and credentials are valid
-          aws sts get-caller-identity
-      
-          - name: SSH to EC2
-          uses: appleboy/ssh-action@v0.1.10
-          with:
-            host: ${{ secrets.EC2_HOST }}
-            username: ubuntu # Or your username
-            key: ${{ secrets.EC2_SSH_KEY }}
-            script: |
-              echo "Successfully connected to EC2!"
-              whoami
-              hostname
-              uptime
-              date
-            
+      - name: SSH to EC2 # This step remains
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "Successfully connected to EC2!"
+            whoami
+            hostname
+            uptime
+            date
+            # ... (rest of your SSH script)
