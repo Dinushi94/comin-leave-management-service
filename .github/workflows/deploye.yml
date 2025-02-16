@@ -19,16 +19,16 @@ jobs:
         uses: actions/checkout@v3
 
       # Step 2: Configure AWS credentials using OIDC
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::992382545225:role/github_go_backend # Correct IAM role ARN
-          aws-region: us-west-2 # Replace with your AWS region
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }} # GitHub-Actions-ECR-Deploy-Role
+          aws-region: ${{ secrets.AWS_REGION }}
 
       # Step 3: Login to AWS ECR
       - name: Login to ECR
         run: |
-          aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 992382545225.dkr.ecr.us-west-2.amazonaws.com
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin 992382545225.dkr.ecr.us-west-2.amazonaws.com
 
       # Step 4: Build and tag the Docker image
       - name: Build and tag Docker image
@@ -45,15 +45,17 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.EC2_HOST }} # Public IP or DNS of your EC2 instance
-          username: ubuntu # SSH username for your EC2 instance
-          key: ${{ secrets.EC2_SSH_KEY }} # Private SSH key for your EC2 instance
+          host: ${{ secrets.EC2_HOST }} # Elastic IP or DNS of EC2 instance
+          username: ubuntu # SSH username for EC2
+          key: ${{ secrets.EC2_SSH_KEY }} # Private SSH key
           script: |
+            # Login to AWS ECR
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin 992382545225.dkr.ecr.us-west-2.amazonaws.com
+
             # Pull the latest Docker image from ECR
-            aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 992382545225.dkr.ecr.us-west-2.amazonaws.com
             docker pull 992382545225.dkr.ecr.us-west-2.amazonaws.com/comin-leave-management-service:latest
 
-            # Stop and remove the existing container (if any)
+            # Stop and remove the existing container (if running)
             docker stop comin-leave-management-service || true
             docker rm comin-leave-management-service || true
 
