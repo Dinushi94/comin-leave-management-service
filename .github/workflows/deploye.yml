@@ -42,17 +42,4 @@ jobs:
               hostname
               uptime
               date
-              # Check for Docker (if needed)
-              if command -v docker &> /dev/null; then
-                echo "Docker is installed:"
-                docker ps
-              else
-                echo "Docker is NOT installed."
-              fi
-              # Check if your application is running (replace with your app's port)
-              if curl -s http://localhost:8080 > /dev/null; then # Replace 8080 with your app's port
-                echo "Application is running!"
-              else
-                echo "Application is NOT running or not accessible on port 8080." # Replace 8080
-              fi
-              # Add more debugging commands as needed
+            
