@@ -23,7 +23,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }} # IAM role ARN
-          aws-region: ${{ secrets.AWS_ACCOUNT_ID }}  # AWS region 
+          aws-region: ${{ secrets.AWS_REGION }}  # AWS region 
 
       - name: Verify AWS credentials
         run: |
